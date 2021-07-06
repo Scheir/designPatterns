@@ -6,7 +6,7 @@
 
 using namespace std;
 
-
+// Can also be named Observer, listener
 class Subscriber{
 public:
     virtual ~Subscriber(){};
@@ -14,7 +14,7 @@ public:
     virtual int getNo() = 0;
 };
 
-
+// Can also be named subject, event manager
 class Publisher{
 public:
     virtual ~Publisher(){};
@@ -30,7 +30,9 @@ public:
     void subscribe(Subscriber* sub){
         subscriberVec.push_back(sub);
     }
-
+    
+    // use the static number which is delt to the subscriber to search for the element
+    // in the vectore and remove from vector.
     void unsubscribe(Subscriber* sub){
         auto it = find_if(subscriberVec.begin(), subscriberVec.end(), [&](Subscriber* s){
             return sub->getNo() == s->getNo();
@@ -43,13 +45,16 @@ public:
            (*it)->update(message);
         }
     }
-
+    
+    // In its simplest form this is just a string message, can literally be anything
     void createMessage(string newMessage){
         message = newMessage;
     }
 
 private:
+    // This can be anything
     string message;
+    // The vector that holds all subscribers to the instance of publisher
     vector<Subscriber*> subscriberVec;
 };
 
@@ -63,7 +68,7 @@ public:
     }
 
     virtual ~SubscriberImpl(){}
-
+    
     void update(const string newMessage){
         message = newMessage;
         printInfo();
@@ -74,10 +79,11 @@ public:
         cout << "Subscriber with no: " << subNo << " Unsusubscribed" << endl;
     }
     
+    // Not really used, good for debugging
     void printInfo(){
         cout << "Subscriber no: " << subNo << " Notifed! Message: " << message << endl;
     }
-
+    
     int getNo(){
         return subNo;
     }
@@ -85,6 +91,7 @@ public:
 
 private:
     string message;
+    // Reference to Publisher so all instances of Subscriber refers to the same publisher
     PublisherImpl& pub;
     static int subCount;
     int subNo;
@@ -100,6 +107,8 @@ public:
    ~Customer(){}
 
     void subscribeToStock(PublisherImpl* pub){
+        // Use the ptr/reference to the publisher instead of a copy
+        // So all are subscribed to the same object (this) below
         sub = shared_ptr<Subscriber>(new SubscriberImpl(*pub));
     }
 
@@ -108,6 +117,7 @@ public:
     }
 
 private:
+    // Can perhaps be a unique_ptr
     shared_ptr<Subscriber> sub;
     string name;    
 };
@@ -125,6 +135,8 @@ public:
             message = "Stock is empty!";
         }
         createMessage(message);
+        // this will notify all subscribers which are subscibed to (this) where parts of
+        // this is a publisher
         notify();
     }
     void fillStock(int amount){
@@ -143,10 +155,12 @@ public:
 
     void newCustomer(string name){
         Customer cust(name);
+        // Here we subscribe to the publisher using the publisher part of this
         cust.subscribeToStock(this);
         customerVec.push_back(cust);
     }
-
+    
+    // Not really used at the moment
     Customer& getCustomer(string name){
         auto it = find(customerVec.begin(), customerVec.end(), name);
         if(it == customerVec.end())
