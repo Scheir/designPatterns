@@ -6,7 +6,7 @@
 
 using namespace std;
 
-// Can also be named Observer, listener
+// Can also be named Observer
 class Subscriber{
 public:
     virtual ~Subscriber(){};
@@ -14,7 +14,7 @@ public:
     virtual int getNo() = 0;
 };
 
-// Can also be named subject, event manager
+// Can also be named subject
 class Publisher{
 public:
     virtual ~Publisher(){};
