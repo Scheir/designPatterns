@@ -42,7 +42,9 @@ public:
 
     void notify(){
         for(auto it = subscriberVec.begin(); it != subscriberVec.end(); it++){
-           (*it)->update(message);
+            if(*it){
+                (*it)->update(message);
+            }
         }
     }
     
